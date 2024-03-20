@@ -1,0 +1,34 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import linregress
+
+# 1. Import the data
+df = pd.read_csv("epa-sea-level.csv")
+
+# 2. Create a scatter plot
+plt.figure(figsize=(12, 6))
+plt.scatter(df['Year'], df['CSIRO Adjusted Sea Level'], color='blue', label='Sea Level')
+
+# 3. Get the slope and y-intercept of the line of best fit and plot it
+slope, intercept, r_value, p_value, std_err = linregress(df['Year'], df['CSIRO Adjusted Sea Level'])
+plt.plot(df['Year'], slope * df['Year'] + intercept, color='red', label='Best Fit Line')
+
+# 4. Plot a new line of best fit using data from year 2000
+recent_years = df[df['Year'] >= 2000]
+slope_recent, intercept_recent, _, _, _ = linregress(recent_years['Year'], recent_years['CSIRO Adjusted Sea Level'])
+plt.plot(df['Year'], slope_recent * df['Year'] + intercept_recent, color='green', label='Recent Best Fit Line')
+
+# 5. Make both lines of best fit go through the year 2050
+plt.plot([df['Year'].iloc[0], 2050], [intercept, slope * 2050 + intercept], linestyle='dotted', color='red')
+plt.plot([2000, 2050], [intercept_recent, slope_recent * 2050 + intercept_recent], linestyle='dotted', color='green')
+
+# 6. Label axes and title
+plt.xlabel('Year')
+plt.ylabel('Sea Level (inches)')
+plt.title('Rise in Sea Level')
+plt.legend()
+
+# Save and return the plot
+plt.tight_layout()
+plt.savefig('sea_level_plot.png')
+plt.show()
